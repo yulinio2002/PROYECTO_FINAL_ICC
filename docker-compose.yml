@@ -7,7 +7,7 @@ services:
     ports:
     - "5000:5000"
     volumes:
-      -./app/static/images:/app/app/static/images
+      - ./app/static/images:/app/app/static/images
   db:
     image: mysql:5.7
     ports:
