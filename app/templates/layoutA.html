@@ -1,0 +1,61 @@
+<html>
+ <head>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    .nav-item:active {
+      background-color: #4a90e2; /* Change to a different color when clicked */
+    }
+  </style>
+ </head>
+ <body class="bg-gray-100">
+  <div class="flex">
+   <!-- Sidebar -->
+   <div class="bg-blue-500 text-white w-1/5 h-screen flex flex-col items-center py-4">
+    <div class="mb-8">
+     <i class="fas fa-camera text-4xl mb-2"></i>
+     <span class="text-lg font-bold">
+      ESP32-CAM
+     </span>
+    </div>
+    <nav class="flex flex-col space-y-4 w-full px-4">
+     <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="#">
+      Vehiculos
+     </a>
+     <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="#">
+      Usuarios
+     </a>
+    </nav>
+    <div class="mt-auto mb-4 w-full px-4">
+     <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600 flex items-center" href="#">
+      <i class="fas fa-sign-out-alt mr-2">
+      </i>
+      Log Out
+     </a>
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex-1 flex flex-col">
+    <!-- Header -->
+    <div class="bg-white shadow p-4 flex justify-between items-center">
+      <div class="flex items-center ml-auto text-center bg-blue-500 p-2 rounded-lg">
+        {% block div %}
+
+        {% endblock %}
+      </div>
+    
+     <div class="flex items-center ml-auto">
+      <i class="fas fa-user-circle text-2xl text-gray-600"></i>
+      <span class="ml-2">
+       RICK23
+      </span>
+     </div>
+    </div>
+    {% block body %}
+
+    {% endblock %}
+   </div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,33 @@
+
+
+.dog-img {
+    height: 100vh; /* Hace que el contenedor verde ocupe toda la altura de la pantalla */
+    display: flex;
+    align-items: center; /* Centra verticalmente el contenido */
+}
+
+
+.imagen-derecha {
+    float: right; /* Mueve la imagen a la derecha */
+    max-width: 30%; /* Ajusta el ancho al 30% del contenedor, puedes ajustar este valor */
+    max-height: 100vh; /* Limita la altura para que no exceda el alto de la pantalla */
+    object-fit: contain; /* Asegura que la imagen se mantenga en sus proporciones */
+}
+
+
+.subtitulo-rosa {
+    display: inline-block; /* Hace que el contenedor se ajuste al tamaño del texto */
+    background-color: #f4a6a6; /* Color rosa pastel */
+    padding: 10px 20px; /* Espaciado interno para darle forma de rectángulo */
+    border-radius: 25px; /* Esquinas redondeadas */
+    text-align: center;
+}
+
+.subtitulo-rosa h1 {
+    margin: 0; /* Elimina el margen del h1 para que quede centrado en el contenedor */
+    font-size: 1.2rem; /* Ajusta el tamaño del texto según prefieras */
+    font-weight: bold;
+    color: black; /* Cambia el color del texto a negro */
+}
+
+

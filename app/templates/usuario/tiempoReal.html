@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block div %}
+<h1 class="text-1xl font-bold text-gray-800">TIEMPO REAL</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto p-4">
+    <!-- Recuadro de Cámara -->
+    <!-- <div class="border border-gray-300 rounded-lg p-4 text-center"> -->
+        <!-- <h3 class="text-lg font-bold mb-4">Cámara entrada garage</h3> -->
+        <!-- <img id="camera-feed" src="http://192.168.174.248:81/stream"  -->
+             <!-- alt="Transmisión en tiempo real"  -->
+             <!-- class="w-full max-w-md mx-auto border rounded-md"> -->
+    <!-- </div> -->
+    <div class="border border-gray-300 rounded-lg p-4 text-center">
+        <h3 class="text-lg font-bold mb-4">Cámara entrada garage</h3>
+        <video id="camera-feed" src="http://127.0.0.1:3000/video_feed" 
+             alt="Transmisión en tiempo real" 
+             class="w-full max-w-md mx-auto border rounded-md">
+    </div>
+    
+    <!-- Botón para tomar captura -->
+    <div class="text-center mt-4">
+        <form method="POST" action="{{ url_for('tomar_captura') }}">
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                Tomar Captura
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

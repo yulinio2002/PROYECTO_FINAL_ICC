@@ -1,0 +1,11 @@
+flask
+pymysql
+werkzeug
+opencv-python
+Pillow
+easyocr
+numpy
+collections
+inference-sdk
+opencv-python-headless
+

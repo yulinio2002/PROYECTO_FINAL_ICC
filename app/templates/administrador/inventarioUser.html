@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block div %}
+<h1 class="text-1xl font-bold text-gray-800">EditorDeUsuarios</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto mt-5 bg-white p-6 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-4">
+        <!-- Botón "Agregar Nuevo Usuario" alineado a la izquierda -->
+        <button onclick="window.location.href='/administrador/insertarUsuario'" 
+            class="bg-blue-500 text-white px-4 py-2 rounded shadow">
+            Agregar Nuevo Usuario
+        </button>
+
+        <!-- Encabezado "Inventario de Usuarios" alineado al centro -->
+        <h1 class="text-center text-gray-800 flex-grow text-lg font-bold">
+            Inventario de Usuarios
+        </h1>
+    </div>
+
+    <!-- Contenedor con scroll lateral -->
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-300 mb-6">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">ID</th>
+                    <th class="border border-gray-300 px-4 py-2">Nombre</th>
+                    <th class="border border-gray-300 px-4 py-2">Apellido</th>
+                    <th class="border border-gray-300 px-4 py-2">Email</th>
+                    <th class="border border-gray-300 px-4 py-2">Username</th>
+                    <th class="border border-gray-300 px-4 py-2">Password</th>
+                    <th class="border border-gray-300 px-4 py-2">Teléfono</th>
+                    <th class="border border-gray-300 px-4 py-2">Dirección</th>
+                    <th class="border border-gray-300 px-4 py-2">Rol</th>
+                    <th class="border border-gray-300 px-4 py-2">Estado</th>
+                    <th class="border border-gray-300 px-4 py-2">Fecha Creación</th>
+                    <th class="border border-gray-300 px-4 py-2">Último Acceso</th>
+                    <th class="border border-gray-300 px-4 py-2">Propietario Condominio</th>
+                    <th class="border border-gray-300 px-4 py-2">Foto Perfil</th>
+                    <th class="border border-gray-300 px-4 py-2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.id }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.nombre }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.apellido }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.email }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.username }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.password }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.telefono }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.direccion }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.rol }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.estado }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.fecha_creacion }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.ultimo_acceso }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ usuario.propietario_condominio_id }}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        {% if usuario.foto_perfil %}
+                            <img src="{{ url_for('static', filename=usuario.foto_perfil.split('src/static/')[1]) }}" 
+                                 alt="Foto Perfil" 
+                                 class="w-10 h-10 rounded-full">
+                        {% else %}
+                            Sin Foto
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <a href="/administrador/actualizarUsuario/{{ usuario.id }}" class="bg-blue-500 text-white px-2 py-1 rounded">Editar</a>
+                        <form method="POST" action="/administrador/eliminarUsuario/{{ usuario.id }}" style="display:inline;">
+                            <button class="bg-red-500 text-white px-2 py-1 rounded" type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

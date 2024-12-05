@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block div %}
+<h1 class="text-1xl font-bold text-gray-800">Insertar Vehículo</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto p-4">
+    <form method="POST" action="{{ url_for('guardarVehiculo') }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="placa" class="block text-gray-700">Placa:</label>
+                <input type="text" id="placa" name="placa" required
+                    class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="marca" class="block text-gray-700">Marca:</label>
+                <input type="text" id="marca" name="marca" class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="modelo" class="block text-gray-700">Modelo:</label>
+                <input type="text" id="modelo" name="modelo" class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="color" class="block text-gray-700">Color:</label>
+                <input type="text" id="color" name="color" class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="propietario" class="block text-gray-700">Propietario:</label>
+                <input type="text" id="propietario" name="propietario" required
+                    class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="telefono_contacto" class="block text-gray-700">Teléfono:</label>
+                <input type="text" id="telefono_contacto" name="telefono_contacto"
+                    class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="email_contacto" class="block text-gray-700">Correo Electrónico:</label>
+                <input type="email" id="email_contacto" name="email_contacto"
+                    class="border border-gray-300 rounded w-full p-2">
+            </div>
+            <div>
+                <label for="estado_ubicacion" class="block text-gray-700">Estado Ubicación:</label>
+                <select id="estado_ubicacion" name="estado_ubicacion" class="border border-gray-300 rounded w-full p-2">
+                    <option value="Adentro">Adentro</option>
+                    <option value="Afuera">Afuera</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-4 text-right">
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                Guardar
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

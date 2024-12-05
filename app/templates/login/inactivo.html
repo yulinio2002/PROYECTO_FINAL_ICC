@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Usuario Inactivo</title>
+    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gradient-primary">
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card shadow-lg border-0">
+            <div class="card-body text-center p-4">
+                <h1 class="text-danger mb-3">Tu cuenta está inactiva</h1>
+                <p class="mb-4">Por favor, contacta al administrador para habilitar tu cuenta.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Volver al Login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

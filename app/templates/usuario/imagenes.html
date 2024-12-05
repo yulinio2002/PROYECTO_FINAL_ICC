@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block div %}
+<h1 class="text-1xl font-bold text-gray-800">IMAGENES</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto p-4">
+    <!-- Filtro -->
+    <form method="GET" action="{{ url_for('usuarioImagenes') }}" class="flex flex-col gap-4 mb-4">
+        <div class="flex items-center gap-4">
+            <label for="fecha_inicio" class="mr-2">Fecha Inicio:</label>
+            <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" class="border border-gray-300 rounded p-2">
+
+            <label for="fecha_fin" class="mr-2">Fecha Fin:</label>
+            <input type="datetime-local" id="fecha_fin" name="fecha_fin" class="border border-gray-300 rounded p-2">
+        </div>
+
+        <div class="flex items-center gap-4">
+            <label for="placa" class="mr-2">Placa:</label>
+            <input type="text" id="placa" name="placa" placeholder="Ingrese placa" class="border border-gray-300 rounded p-2">
+
+            <label for="estado" class="mr-2">Estado Identificado:</label>
+            <select id="estado" name="estado" class="border border-gray-300 rounded p-2">
+                <option value="">Todos</option>
+                <option value="SI">Sí</option>
+                <option value="NO">No</option>
+            </select>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Filtrar</button>
+    </form>
+
+    <!-- Tabla de imágenes -->
+    <div class="container mx-auto">
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">Placa Detectada</th>
+                    <th class="border border-gray-300 px-4 py-2">Estado Identificado</th>
+                    <th class="border border-gray-300 px-4 py-2">Fecha Captura</th>
+                    <th class="border border-gray-300 px-4 py-2">Imagen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for captura in capturas %}
+                <tr>
+                    <td class="border border-gray-300 px-4 py-2">{{ captura.placa_detectada }}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        {% if captura.estado_identificado == 'SI' %}
+                        <span class="text-green-600 font-bold">Sí</span>
+                        {% else %}
+                        <span class="text-red-600 font-bold">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">{{ captura.fecha_captura }}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <img src="/{{captura.imagen_placa}}" alt="Placa" class="w-40 h-auto rounded">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

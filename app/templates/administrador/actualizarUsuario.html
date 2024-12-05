@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block div %}
+<h1 class="text-1xl font-bold text-gray-800">Actualizar Usuario</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mx-auto mt-5 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-center text-gray-800 mb-4">Editar Usuario</h1>
+    <form method="POST" action="/administrador/actualizarUsuario/{{ usuario.id }}" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ usuario.nombre }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" value="{{ usuario.apellido }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ usuario.email }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ usuario.username }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="password">Password:</label>
+            <input type="password" id="password" name="password" value="{{ usuario.password }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" value="{{ usuario.telefono }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" value="{{ usuario.direccion }}" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="rol">Rol:</label>
+            <select id="rol" name="rol" class="border border-gray-300 rounded w-full py-2 px-3">
+                <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="guard" {% if usuario.rol == 'guard' %}selected{% endif %}>Guard</option>
+                <option value="user" {% if usuario.rol == 'user' %}selected{% endif %}>User</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="estado">Estado:</label>
+            <select id="estado" name="estado" class="border border-gray-300 rounded w-full py-2 px-3">
+                <option value="activo" {% if usuario.estado == 'activo' %}selected{% endif %}>Activo</option>
+                <option value="inactivo" {% if usuario.estado == 'inactivo' %}selected{% endif %}>Inactivo</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2" for="foto_perfil">Foto de Perfil:</label>
+            <input type="file" id="foto_perfil" name="foto_perfil" class="border border-gray-300 rounded w-full py-2 px-3">
+        </div>
+        <div class="flex justify-end">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" type="submit">Actualizar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
