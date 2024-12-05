@@ -540,12 +540,9 @@ def administrador():
 
 # Configurar cliente de inferencia y OCR
 # Configuración del cliente de inferencia
-"""
-CLIENT = InferenceHTTPClient(
-    api_url="https://detect.roboflow.com",
-    api_key="rgQrPQMGYFteBv9TbWdo"
-)
-reader = easyocr.Reader(['en', 'es'])
+API_KEY = '93d6c9bd98627827856939e9e675504589caf2b6'
+PLATE_RECOGNIZER_URL = "https://api.platerecognizer.com/v1/plate-reader/"
+
 # Configuración de la cámara
 url = "http://192.168.137.146:81/stream"
 cap = cv2.VideoCapture(url)
@@ -557,25 +554,21 @@ plate_texts = []
 most_common_plate_img = None
 most_common_text = None
 
-# Función para inferir placas
-def infer_plate(frame):
-    image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    try:
-        result = CLIENT.infer(image, model_id="yolo-plate/3")
-        return result
-    except Exception as e:
-        print(f"Ocurrió un error durante la inferencia: {e}")
-        return None
+# Función para enviar la imagen a Plate Recognizer
+def send_image_to_plate_recognizer(image):
+    """Envía la imagen a la API de Plate Recognizer"""
+    headers = {
+        'Authorization': f'Token {API_KEY}'
+    }
+    
+    _, img_encoded = cv2.imencode('.jpg', image)
+    files = {'upload': BytesIO(img_encoded.tobytes())}
+    
+    response = requests.post(PLATE_RECOGNIZER_URL, headers=headers, files=files)
+    
+    return response.json() if response.status_code == 200 else None
 
-# Extraer texto de la placa
-def extract_text(image):
-    h, w = image.shape[:2]
-    cropped_img = image[int(h * 0.25):int(h * 0.8), :]
-    results = reader.readtext(cropped_img)
-    plate_text = ' '.join([result[1] for result in results]).upper()
-    return plate_text.strip()
-
-# Generar frames procesados
+# Función para generar frames procesados
 def generate_frames():
     global plate_texts, most_common_plate_img, most_common_text
     try:
@@ -584,24 +577,26 @@ def generate_frames():
             if not success:
                 break
 
-            result = infer_plate(frame)
+            # Enviar la imagen a la API de Plate Recognizer para detectar la placa
+            result = send_image_to_plate_recognizer(frame)
 
-            if result and 'predictions' in result:
-                for detection in result['predictions']:
-                    x_min = int(detection['x'] - detection['width'] / 2)
-                    y_min = int(detection['y'] - detection['height'] / 2)
-                    x_max = int(detection['x'] + detection['width'] / 2)
-                    y_max = int(detection['y'] + detection['height'] / 2)
+            if result and 'results' in result:
+                for detection in result['results']:
+                    # Extraer la caja delimitadora de la placa
+                    bbox = detection['box']
+                    plate_text = detection['plate']
 
+                    # Dibujar la caja delimitadora sobre la imagen
+                    x_min, y_min, x_max, y_max = bbox['xmin'], bbox['ymin'], bbox['xmax'], bbox['ymax']
                     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
 
+                    # Recortar la imagen de la placa
                     plate_img = frame[y_min:y_max, x_min:x_max]
-                    plate_text = extract_text(plate_img)
 
-                    if plate_text:
-                        plate_texts.append(plate_text)
-                        if most_common_text is None or plate_text == most_common_text:
-                            most_common_plate_img = plate_img
+                    # Almacenar el texto de la placa y la imagen de la placa
+                    plate_texts.append(plate_text)
+                    if most_common_text is None or plate_text == most_common_text:
+                        most_common_plate_img = plate_img
 
             if len(plate_texts) >= 10:
                 most_common_text = Counter(plate_texts).most_common(1)[0][0]
@@ -615,6 +610,7 @@ def generate_frames():
                 most_common_plate_img = None
                 most_common_text = None
 
+            # Codificar la imagen en formato JPEG y enviarla como frame
             _, buffer = cv2.imencode('.jpg', frame)
             frame_bytes = buffer.tobytes()
             yield (b'--frame\r\n'
@@ -625,7 +621,6 @@ def generate_frames():
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-"""
 if __name__ == '__main__':
     # Iniciar el procesador de imágenes en un hilo separado
     threading.Thread(target=start_image_processor, daemon=True).start()

@@ -3,8 +3,5 @@ pymysql
 werkzeug
 opencv-python
 Pillow
-easyocr
-numpy
-inference-sdk
-opencv-python-headless
+requests
 
