@@ -1,6 +1,10 @@
 {% extends 'layout.html' %}
 {% block div %}
-<h1 class="text-1xl font-bold text-gray-800">EditorDeUsuarios</h1>
+<div class="flex items-center ml-auto text-center">
+    <button class="bg-blue-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700">
+        EditorDeUsuarios
+    </button>
+</div>
 {% endblock %}
 
 {% block body %}
@@ -28,14 +32,11 @@
                     <th class="border border-gray-300 px-4 py-2">Apellido</th>
                     <th class="border border-gray-300 px-4 py-2">Email</th>
                     <th class="border border-gray-300 px-4 py-2">Username</th>
-                    <th class="border border-gray-300 px-4 py-2">Password</th>
-                    <th class="border border-gray-300 px-4 py-2">Teléfono</th>
-                    <th class="border border-gray-300 px-4 py-2">Dirección</th>
+                    <th class="border border-gray-300 px-4 py-2">Password</th>                
                     <th class="border border-gray-300 px-4 py-2">Rol</th>
                     <th class="border border-gray-300 px-4 py-2">Estado</th>
                     <th class="border border-gray-300 px-4 py-2">Fecha Creación</th>
                     <th class="border border-gray-300 px-4 py-2">Último Acceso</th>
-                    <th class="border border-gray-300 px-4 py-2">Propietario Condominio</th>
                     <th class="border border-gray-300 px-4 py-2">Foto Perfil</th>
                     <th class="border border-gray-300 px-4 py-2">Acciones</th>
                 </tr>
@@ -49,13 +50,10 @@
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.email }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.username }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.password }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ usuario.telefono }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ usuario.direccion }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.rol }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.estado }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.fecha_creacion }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ usuario.ultimo_acceso }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ usuario.propietario_condominio_id }}</td>
                     <td class="border border-gray-300 px-4 py-2">
                         {% if usuario.foto_perfil %}
                             <img src="{{ url_for('static', filename=usuario.foto_perfil.split('src/static/')[1]) }}" 

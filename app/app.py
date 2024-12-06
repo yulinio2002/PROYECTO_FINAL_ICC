@@ -2,23 +2,22 @@ import os
 import pymysql
 import threading
 import time
-from flask import Flask, flash, render_template, redirect, url_for, request, session
-from datetime import datetime  # Importar datetime para manejar fechas y horas
+from flask import Flask, flash, render_template, redirect, url_for, request, session,Response,send_from_directory
+#from datetime import datetime  # Importar datetime para manejar fechas y horas,
 from dao.DAOUsuario import DAOUsuario
 from dao.DAOVehiculos import DAOVehiculos
 from dao.DAOCapturas import DAOCapturas
 from dao.DAOEventos import DAOEventos
 from werkzeug.utils import secure_filename
-import uuid  # Para generar nombres únicos
 ####PARA PROCESAMIENTO######
-from flask import Flask, Response
+from flask import Flask
 import cv2
-from PIL import Image
-import easyocr
-from inference_sdk import InferenceHTTPClient
-import numpy as np
-from collections import Counter
+
+
 import os
+import requests
+import numpy as np
+
 
 app = Flask(__name__)
 app.secret_key = "mys3cr3tk3y"
@@ -537,90 +536,120 @@ def administrador():
 #   return render_template('error.html')
 
 ########### PROCESAMIENTO DE LA CÁMARA ###################
-
-# Configurar cliente de inferencia y OCR
-# Configuración del cliente de inferencia
 API_KEY = '93d6c9bd98627827856939e9e675504589caf2b6'
 PLATE_RECOGNIZER_URL = "https://api.platerecognizer.com/v1/plate-reader/"
+CAMERA_URL = "http://192.168.137.235:8080/video"  # Ajusta esta URL a tu cámara
 
-# Configuración de la cámara
-url = "http://192.168.137.146:81/stream"
-cap = cv2.VideoCapture(url)
-cap.set(3, 640)
-cap.set(4, 480)
 
-# Variables globales
-plate_texts = []
-most_common_plate_img = None
-most_common_text = None
 
-# Función para enviar la imagen a Plate Recognizer
-def send_image_to_plate_recognizer(image):
-    """Envía la imagen a la API de Plate Recognizer"""
-    headers = {
-        'Authorization': f'Token {API_KEY}'
-    }
-    
+# Crear la carpeta para guardar imágenes si no existe
+os.makedirs('static/images', exist_ok=True)
+
+# Función para obtener frames desde la cámara
+def get_frame_from_camera():
+    stream = requests.get(CAMERA_URL, stream=True)
+    if stream.status_code == 200:
+        byte_data = b""
+        for chunk in stream.iter_content(chunk_size=1024):
+            byte_data += chunk
+            a = byte_data.find(b'\xff\xd8')  # Start of JPEG
+            b = byte_data.find(b'\xff\xd9')  # End of JPEG
+            if a != -1 and b != -1:
+                jpg = byte_data[a:b+2]
+                byte_data = byte_data[b+2:]
+                frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+                return frame
+    else:
+        print("Error al conectarse a la cámara.")
+        return None
+
+# Función para detectar placas usando la API
+def detect_plate(image):
+    headers = {'Authorization': f'Token {API_KEY}'}
     _, img_encoded = cv2.imencode('.jpg', image)
-    files = {'upload': BytesIO(img_encoded.tobytes())}
-    
-    response = requests.post(PLATE_RECOGNIZER_URL, headers=headers, files=files)
-    
-    return response.json() if response.status_code == 200 else None
+    files = {'upload': ('image.jpg', img_encoded.tobytes(), 'image/jpeg')}
 
-# Función para generar frames procesados
-def generate_frames():
-    global plate_texts, most_common_plate_img, most_common_text
     try:
-        while True:
-            success, frame = cap.read()
-            if not success:
-                break
+        response = requests.post(PLATE_RECOGNIZER_URL, headers=headers, files=files)
+        if response.status_code in [200, 201]:
+            return response.json()
+        else:
+            print(f"Error de la API: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"Error al conectar con la API: {e}")
+    return None
 
-            # Enviar la imagen a la API de Plate Recognizer para detectar la placa
-            result = send_image_to_plate_recognizer(frame)
+# Generar frames para la transmisión de video
+def generate_frames():
+    last_request_time = 0  # Inicializar el tiempo del último envío
+
+    while True:
+        frame = get_frame_from_camera()  # Esto obtiene un nuevo frame en cada ciclo
+        if frame is None:
+            print("No se pudo acceder a la cámara.")
+            break
+
+        current_time = time.time()
+        if current_time - last_request_time >= 10:  # Verificar si han pasado 10 segundos
+            result = detect_plate(frame)
+            last_request_time = current_time  # Actualizar el tiempo del último envío
 
             if result and 'results' in result:
-                for detection in result['results']:
-                    # Extraer la caja delimitadora de la placa
-                    bbox = detection['box']
-                    plate_text = detection['plate']
+                for plate in result['results']:
+                    # Obtener el texto de la placa
+                    plate_text = plate['plate']
+                    print(f"Placa detectada: {plate_text}")
 
-                    # Dibujar la caja delimitadora sobre la imagen
-                    x_min, y_min, x_max, y_max = bbox['xmin'], bbox['ymin'], bbox['xmax'], bbox['ymax']
-                    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+                    # Recortar la imagen usando el cuadro delimitador
+                    box = plate['box']
+                    xmin, ymin, xmax, ymax = box['xmin'], box['ymin'], box['xmax'], box['ymax']
 
-                    # Recortar la imagen de la placa
-                    plate_img = frame[y_min:y_max, x_min:x_max]
+                    # Validar los límites del recorte
+                    height, width, _ = frame.shape
+                    print(f"Dimensiones del frame: {width}x{height}")
+                    print(f"Coordenadas del recorte: xmin={xmin}, ymin={ymin}, xmax={xmax}, ymax={ymax}")
 
-                    # Almacenar el texto de la placa y la imagen de la placa
-                    plate_texts.append(plate_text)
-                    if most_common_text is None or plate_text == most_common_text:
-                        most_common_plate_img = plate_img
+                    # Ajustar las coordenadas a los límites del frame
+                    xmin = max(0, min(xmin, width))
+                    ymin = max(0, min(ymin, height))
+                    xmax = max(0, min(xmax, width))
+                    ymax = max(0, min(ymax, height))
 
-            if len(plate_texts) >= 10:
-                most_common_text = Counter(plate_texts).most_common(1)[0][0]
-                print(f"Texto de placa más frecuente: {most_common_text}")
-                if most_common_plate_img is not None:
-                    os.makedirs("static/images", exist_ok=True)
-                    image_name = os.path.join("static/images", f"placa_{most_common_text}.jpg")
-                    cv2.imwrite(image_name, most_common_plate_img)
-                    print(f"Imagen guardada: {image_name}")
-                plate_texts = []
-                most_common_plate_img = None
-                most_common_text = None
+                    if xmax > xmin and ymax > ymin:
+                        cropped_plate = frame[ymin:ymax, xmin:xmax]
+                        if cropped_plate.size > 0:
+                            # Guardar la imagen recortada en un archivo
+                            #timestamp = datetime.now().strftime('%Y%m%d_%H%M%S%f')
+                            file_name = f"static/images/placa_{plate_text}.jpg"
 
-            # Codificar la imagen en formato JPEG y enviarla como frame
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame_bytes = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-    finally:
-        cap.release()
+                            try:
+                                if cv2.imwrite(file_name, cropped_plate):
+                                    print(f"Imagen de la placa guardada: {file_name}")
+                                else:
+                                    print(f"Error al guardar la imagen: {file_name}")
+                            except Exception as e:
+                                print(f"Error al intentar guardar la imagen: {e}")
+                        else:
+                            print("Error: La imagen recortada está vacía.")
+                    else:
+                        print("Error: Dimensiones de recorte inválidas.")
 
+        # Codificar el frame como JPEG para la transmisión
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+# Ruta para la transmisión de video
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Ruta para acceder a las imágenes guardadas
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory('static/images', filename)
+
 if __name__ == '__main__':
     # Iniciar el procesador de imágenes en un hilo separado
     threading.Thread(target=start_image_processor, daemon=True).start()

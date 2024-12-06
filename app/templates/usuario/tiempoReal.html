@@ -1,7 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block div %}
-<h1 class="text-1xl font-bold text-gray-800">TIEMPO REAL</h1>
+<div class="flex items-center ml-auto text-center">
+    <button class="bg-blue-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700">
+        TIEMPO REAL
+    </button>
+</div>
 {% endblock %}
 
 {% block body %}
@@ -15,7 +19,7 @@
     <!-- </div> -->
     <div class="border border-gray-300 rounded-lg p-4 text-center">
         <h3 class="text-lg font-bold mb-4">Cámara entrada garage</h3>
-        <video id="camera-feed" src="http://127.0.0.1:3000/video_feed" 
+        <img id="camera-feed" src="http://127.0.0.1:5000/video_feed" 
              alt="Transmisión en tiempo real" 
              class="w-full max-w-md mx-auto border rounded-md">
     </div>

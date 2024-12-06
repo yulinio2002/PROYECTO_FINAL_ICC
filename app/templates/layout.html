@@ -3,45 +3,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
     <style>
-        .nav-item:active {
-            background-color: #4a90e2; /* Cambia de color cuando está activo */
+        /* Aislar estilos del sidebar principal */
+        .main-sidebar .nav-item {
+            background-color: #FFFFFF; /* Fondo blanco */
+            color: #2563EB; /* Texto azul oscuro */
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-weight: bold;
+        }
+    
+        .main-sidebar .nav-item:hover {
+            background-color: #3B82F6; /* Hover azul claro */
+            color: #FFFFFF; /* Texto blanco */
+        }
+    
+        /* Mantener el resto del sidebar azul */
+        .main-sidebar {
+            background-color: #2563EB; /* Fondo azul oscuro */
+            color: #FFFFFF; /* Texto blanco */
         }
     </style>
+    
 </head>
 <body class="bg-gray-100">
-    <div class="flex h-screen">
+    <div class="flex">
         <!-- Sidebar -->
-        <div class="bg-blue-500 text-white w-1/5 h-full flex flex-col items-center py-4">
+        <div class="main-sidebar bg-blue-500 text-white w-1/5 h-screen flex flex-col items-center py-4">
             <div class="mb-8">
                 <i class="fas fa-camera text-4xl mb-2"></i>
                 <span class="text-lg font-bold">ESP32-CAM</span>
             </div>
             <nav class="flex flex-col space-y-4 w-full px-4">
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="/usuario/">
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500" href="/usuario/">
                     Tiempo real
                 </a>
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="/usuario/registroVehiculos/">
-                    Vehículos Registrados
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500" href="/usuario/registroVehiculos/">
+                    Registro de Vehiculos
                 </a>
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="/usuario/imagenes/">
-                    Registro en Tiempo Real
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500" href="/usuario/imagenes/">
+                    Imagenes
                 </a>
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="/usuario/alertas/">
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500" href="/usuario/alertas/">
                     Alertas
                 </a>
-                <!-- Botón adicional para admins -->
                 {% if rol == 'admin' %}
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600" href="/administrador/inventarioUser/">
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500" href="/administrador/inventarioUser/">
                     Editar Usuarios
                 </a>
                 {% endif %}
             </nav>
             <div class="mt-auto mb-4 w-full px-4">
-                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-blue-600 flex items-center" href="{{ url_for('logout') }}">
-                    <i class="fas fa-sign-out-alt mr-2"></i>Salir
+                <a class="nav-item hover:bg-blue-700 transition-colors duration-300 px-4 py-2 rounded bg-white text-blue-500 flex items-center" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Log Out
                 </a>
             </div>
         </div>
+        
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <!-- Header -->
@@ -57,7 +74,7 @@
                 </div>
             </div>
             <!-- Body -->
-            <div class="container mx-auto mt-8 flex-1 overflow-y-auto">
+            <div class="container mx-auto mt-8">
                 {% block body %}
                 <div>
                     <!-- Este contenido será sobrescrito por las plantillas secundarias -->
